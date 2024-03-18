@@ -1,4 +1,5 @@
 import { notFoundError } from '@/errors';
+import { PostTicketsParams } from '@/protocols';
 import { enrollmentRepository, ticketsRepository } from '@/repositories';
 
 export async function getTicketsTypes() {
@@ -16,10 +17,23 @@ export async function getTickets(userId: number) {
   //status de erro 404
   if (!ticket) throw notFoundError();
 
-  return ticket
+  return ticket;
 }
 
-export async function postTickets() {}
+export async function postTickets(userId: number, ticketTypeId: number) {
+  //inscrição
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  //status de erro 404
+  if (!enrollment) throw notFoundError();
+
+  const ticketParams: PostTicketsParams = {
+    ticketTypeId,
+        enrollmentId: enrollment.id,
+        status: 'RESERVED'
+  }
+  const ticket = await ticketsRepository.postTickets(ticketParams)
+  return ticket
+}
 
 export const ticketServices = {
   getTicketsTypes,

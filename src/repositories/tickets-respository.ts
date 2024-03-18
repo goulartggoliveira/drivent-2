@@ -1,4 +1,5 @@
 import { prisma } from '@/config';
+import { PostTicketsParams } from '@/protocols';
 import { Ticket } from '@prisma/client';
 
 export async function getTicketsTypes() {
@@ -14,10 +15,20 @@ export async function getTickets(enrollmentId: number): Promise<Ticket> {
   return result;
 }
 
-export async function postTickets() {}
+export async function postTickets(ticket: PostTicketsParams) {
+
+  const result = await prisma.ticket.create({
+    data: ticket,
+    include: {TicketType: true}
+  })
+  
+  return result
+
+}
 
 export const ticketsRepository = {
   getTicketsTypes,
   getTickets,
   postTickets,
 };
+
